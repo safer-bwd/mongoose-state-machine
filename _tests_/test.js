@@ -37,7 +37,7 @@ afterEach(async () => {
   await Matter.deleteMany();
 });
 
-it.only('should work after instantiated', async () => {
+it('should work after instantiated', async () => {
   const matter = new Matter();
 
   expect(matter.state).toBe('solid');
