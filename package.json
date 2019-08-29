@@ -1,7 +1,7 @@
 {
   "name": "mongoose-state-machine",
   "version": "0.1.0",
-  "description": "",
+  "description": "A Mongoose plugin that implement a state machine into a model",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
