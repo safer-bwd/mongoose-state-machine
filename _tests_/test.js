@@ -37,20 +37,20 @@ afterEach(async () => {
   await Matter.deleteMany();
 });
 
-it('should work after instantiated', async () => {
+it.only('should work after instantiated', async () => {
   const matter = new Matter();
 
   expect(matter.state).toBe('solid');
   expect(matter.matterState).toBe('solid');
   expect(matter.is('solid')).toBeTruthy();
-  expect(matter.can('liquid')).toBeTruthy();
-  expect(matter.cannot('condense')).toBeTruthy();
+  expect(matter.can('melt')).toBeTruthy();
+  expect(matter.cannot('freeze')).toBeTruthy();
 
   matter.melt();
   expect(matter.state).toBe('liquid');
   expect(matter.matterState).toBe('liquid');
 
-  expect(matter.condense()).toThrow();
+  expect(() => matter.condense()).toThrow();
 });
 
 it('should work after find one', async () => {
