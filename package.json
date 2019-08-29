@@ -1,0 +1,50 @@
+{
+  "name": "mongoose-state-machine",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/safer-bwd/mongoose-state-machine.git"
+  },
+  "author": "Anton Safronov <safer.anton@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/safer-bwd/mongoose-state-machine/issues"
+  },
+  "homepage": "https://github.com/safer-bwd/mongoose-state-machine#readme",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "cross-env NODE_ENV=test jest --colors",
+    "build": "cross-env NODE_ENV=production babel src --out-dir dist",
+    "prepublishOnly": "npm run build"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "verbose": true,
+    "setupFiles": [
+      "dotenv-flow/config"
+    ]
+  },
+  "peerDependencies": {
+    "mongoose": "^5.x"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "cross-env": "^5.2.0",
+    "dotenv-flow": "^3.1.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^22.15.2",
+    "jest": "^24.9.0",
+    "mongoose": "^5.6.11"
+  }
+}
