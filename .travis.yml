@@ -1,0 +1,15 @@
+---
+
+language: node_js
+node_js:
+- stable
+
+services:
+- mongodb
+
+env:
+- DB_MONGO_URI=mongodb://127.0.0.1:27017/test
+
+script:
+- npm run lint
+- npm test
