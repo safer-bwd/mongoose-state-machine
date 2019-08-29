@@ -3,6 +3,8 @@ const mongooseStateMachine = require('../src');
 
 let Matter;
 
+const noop = () => {};
+
 const stateMachine = {
   init: 'solid',
   transitions: [
@@ -10,7 +12,10 @@ const stateMachine = {
     { name: 'freeze', from: 'liquid', to: 'solid' },
     { name: 'vaporize', from: 'liquid', to: 'gas' },
     { name: 'condense', from: 'gas', to: 'liquid' }
-  ]
+  ],
+  methods: {
+    onEnterState: noop
+  }
 };
 
 beforeAll(async () => {

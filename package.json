@@ -46,5 +46,11 @@
     "eslint-plugin-jest": "^22.15.2",
     "jest": "^24.9.0",
     "mongoose": "^5.6.11"
+  },
+  "dependencies": {
+    "javascript-state-machine": "^3.1.0",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "lodash.wrap": "^4.1.1"
   }
 }
