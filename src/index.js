@@ -4,21 +4,23 @@ import get from 'lodash.get';
 import set from 'lodash.set';
 
 export default (schema, options = {}) => {
-  const { stateMachine, fieldName = 'state' } = options;
+  const { stateMachine, fieldName = 'status' } = options;
 
-  if (fieldName !== 'state') {
-    const OnEnter = get(stateMachine, 'methods.onEnterState');
-    const wrappedOnEnter = wrap(OnEnter, (fn, lifecycle, ...args) => {
-      const doc = lifecycle.fsm;
-      if (doc[fieldName] !== lifecycle.to) {
-        doc[fieldName] = lifecycle.to;
-      }
-      if (fn) {
-        fn.bind(doc)(lifecycle, ...args);
-      }
-    });
-    set(stateMachine, 'methods.onEnterState', wrappedOnEnter);
+  if (fieldName === 'state') {
+    throw new Error('Invalid field name: `state` is a reserved property.');
   }
+
+  const onEnterState = get(stateMachine, 'methods.onEnterState');
+  const wrappedOnEnterState = wrap(onEnterState, (fn, lifecycle, ...args) => {
+    const doc = lifecycle.fsm;
+    if (doc[fieldName] !== lifecycle.to) {
+      doc[fieldName] = lifecycle.to;
+    }
+    if (fn) {
+      fn.bind(doc)(lifecycle, ...args);
+    }
+  });
+  set(stateMachine, 'methods.onEnterState', wrappedOnEnterState);
 
   function onInstantiated() {
     const doc = this;

@@ -45,15 +45,15 @@ afterEach(async () => {
 it('should work after instantiated', async () => {
   const matter = new Matter();
 
-  expect(matter.state).toBe('solid');
   expect(matter.matterState).toBe('solid');
+  expect(matter.toObject()).toHaveProperty('matterState', 'solid');
   expect(matter.is('solid')).toBeTruthy();
   expect(matter.can('melt')).toBeTruthy();
   expect(matter.cannot('freeze')).toBeTruthy();
 
   matter.melt();
-  expect(matter.state).toBe('liquid');
   expect(matter.matterState).toBe('liquid');
+  expect(matter.toObject()).toHaveProperty('matterState', 'liquid');
 
   expect(() => matter.condense()).toThrow();
 });
@@ -64,12 +64,12 @@ it('should work after find one', async () => {
   await matter.save();
 
   const foundMatter = await Matter.findOne();
-  expect(foundMatter.state).toBe('liquid');
   expect(foundMatter.matterState).toBe('liquid');
+  expect(matter.toObject()).toHaveProperty('matterState', 'liquid');
 
   foundMatter.vaporize();
-  expect(foundMatter.state).toBe('gas');
   expect(foundMatter.matterState).toBe('gas');
+  expect(matter.toObject()).toHaveProperty('matterState', 'liquid');
 });
 
 it('should work after find', async () => {
@@ -79,6 +79,15 @@ it('should work after find', async () => {
   await matter.save();
 
   const coll = await Matter.find();
-  expect(coll[0].state).toBe('gas');
   expect(coll[0].matterState).toBe('gas');
+  expect(coll[0].toObject()).toHaveProperty('matterState', 'gas');
+});
+
+it('should throw an error if `fieldName` is reserved', async () => {
+  const schema = new mongoose.Schema({ state: String });
+  const addPlugin = () => schema.plugin(mongooseStateMachine, {
+    fieldName: 'state',
+    stateMachine
+  });
+  expect(() => addPlugin()).toThrow();
 });
