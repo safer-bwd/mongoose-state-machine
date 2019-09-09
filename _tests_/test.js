@@ -90,5 +90,5 @@ it('should throw an error if `fieldName` is reserved', async () => {
     stateMachine
   });
   const expectedMsg = 'Invalid field name: `state` is a reserved property.';
-  expect(() => addPlugin()).toThrowError(expectedMsg);
+  expect(() => addPlugin()).toThrow(expectedMsg);
 });
