@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongooseStateMachine = require('../src');
+import mongoose from 'mongoose';
+import mongooseStateMachine from '../src';
 
 let Matter;
 
