@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import mongooseStateMachine from '../src';
+import stateMachinePlugin from '../src';
 
 let Matter;
 
@@ -29,7 +29,7 @@ beforeAll(async () => {
     useFindAndModify: false
   });
   const schema = new mongoose.Schema({ matterState: String });
-  schema.plugin(mongooseStateMachine, { fieldName: 'matterState', stateMachine });
+  schema.plugin(stateMachinePlugin, { fieldName: 'matterState', stateMachine });
   Matter = mongoose.model('Matter', schema);
 });
 
@@ -58,37 +58,49 @@ it('should work after instantiated', async () => {
   expect(() => matter.condense()).toThrow();
 });
 
-it('should work after find one', async () => {
+it('should work after retrieving from a database', async () => {
   const matter = new Matter();
+  await matter.save();
   matter.melt();
   await matter.save();
 
-  const foundMatter = await Matter.findOne();
-  expect(foundMatter.matterState).toBe('liquid');
-  expect(matter.toObject()).toHaveProperty('matterState', 'liquid');
+  // findOne
+  const found1 = await Matter.findOne();
+  expect(found1.matterState).toBe('liquid');
+  expect(found1.toObject()).toHaveProperty('matterState', 'liquid');
+  found1.vaporize();
+  expect(found1.matterState).toBe('gas');
+  expect(found1.toObject()).toHaveProperty('matterState', 'gas');
 
-  foundMatter.vaporize();
-  expect(foundMatter.matterState).toBe('gas');
-  expect(matter.toObject()).toHaveProperty('matterState', 'liquid');
-});
-
-it('should work after find', async () => {
-  const matter = new Matter();
-  matter.melt();
-  matter.vaporize();
-  await matter.save();
-
+  // find
   const coll = await Matter.find();
-  expect(coll[0].matterState).toBe('gas');
-  expect(coll[0].toObject()).toHaveProperty('matterState', 'gas');
+  const found2 = coll[0];
+  expect(found2.matterState).toBe('liquid');
+  expect(found2.toObject()).toHaveProperty('matterState', 'liquid');
+  found2.vaporize();
+  expect(found2.matterState).toBe('gas');
+  expect(found2.toObject()).toHaveProperty('matterState', 'gas');
 });
 
-it('should throw an error if `fieldName` is reserved', async () => {
+it('should throw error if invalid schema paths', async () => {
   const schema = new mongoose.Schema({ state: String });
-  const addPlugin = () => schema.plugin(mongooseStateMachine, {
+  const addPlugin = () => schema.plugin(stateMachinePlugin, {
     fieldName: 'state',
     stateMachine
   });
-  const expectedMsg = 'Invalid field name: `state` is a reserved property.';
-  expect(() => addPlugin()).toThrow(expectedMsg);
+  expect(() => addPlugin()).toThrow('Invalid schema path: \'state\' is reserved');
+
+  const schema1 = new mongoose.Schema({
+    status: String,
+    melt: Number
+  });
+  const addPlugin1 = () => schema1.plugin(stateMachinePlugin, { stateMachine });
+  expect(() => addPlugin1()).toThrow('Invalid schema path: \'melt\' is a transition name');
+
+  const schema2 = new mongoose.Schema({});
+  const addPlugin2 = () => schema2.plugin(stateMachinePlugin, {
+    fieldName: 'status',
+    stateMachine
+  });
+  expect(() => addPlugin2()).toThrow('Failed to find schema path \'status\'');
 });

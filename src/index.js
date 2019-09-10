@@ -3,12 +3,37 @@ import wrap from 'lodash.wrap';
 import get from 'lodash.get';
 import set from 'lodash.set';
 
+class PluginError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'MongooseStateMachineError';
+  }
+}
+
+const reservedPaths = new Set([
+  'state',
+  'is',
+  'cannot',
+  'transitions',
+  'allTransitions',
+  'allStates'
+]);
+
 export default (schema, options = {}) => {
   const { stateMachine, fieldName = 'status' } = options;
-
-  if (fieldName === 'state') {
-    throw new Error('Invalid field name: `state` is a reserved property.');
+  if (!schema.path(fieldName)) {
+    throw new PluginError(`Failed to find schema path '${fieldName}'`);
   }
+
+  const transitionNames = new Set(stateMachine.transitions.map(t => t.name));
+  schema.eachPath((path) => {
+    if (reservedPaths.has(path)) {
+      throw new PluginError(`Invalid schema path: '${path}' is reserved`);
+    }
+    if (transitionNames.has(path)) {
+      throw new PluginError(`Invalid schema path: '${path}' is a transition name`);
+    }
+  });
 
   const onEnterState = get(stateMachine, 'methods.onEnterState');
   const wrappedOnEnterState = wrap(onEnterState, (fn, lifecycle, ...args) => {
