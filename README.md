@@ -62,7 +62,7 @@ const Matter = mongoose.model('Matter', schema);
 Now you can use [javascript-state-machine](https://github.com/jakesgordon/javascript-state-machine) API after creating or retrieving a document from a database.
 
 **Important:**
-The plugin does not manipulate data in a database. To save a state in a database you need to use Mongoose API.
+The plugin does not manipulate data in a database. To save a state to the database you need to use Mongoose API.
 
 ```javascript
 // create document
@@ -83,4 +83,5 @@ const found = Matter.findById(matter.id);
 found.matterState;  // liquid;
 found.vaporize();   // I vaporized!
 found.matterState;  // gas
+found.melt();       // throw error
 ```
