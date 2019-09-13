@@ -27,12 +27,6 @@ export default (schema, options = {}) => {
     throw new PluginError(`Failed to find schema real path '${fieldName}'`);
   }
 
-  let isTransition = false;
-  pathSchemaType.set(function (val) {
-    const doc = this;
-    return isTransition ? val : doc[fieldName];
-  });
-
   const transitionNames = new Set(stateMachine.transitions.map(t => t.name));
   schema.eachPath((path) => {
     if (reservedPaths.has(path)) {
@@ -41,6 +35,12 @@ export default (schema, options = {}) => {
     if (transitionNames.has(path)) {
       throw new PluginError(`Invalid schema path: '${path}' is a transition name`);
     }
+  });
+
+  let isTransition = false;
+  pathSchemaType.set(function (val) {
+    const doc = this;
+    return isTransition ? val : doc[fieldName];
   });
 
   const onEnterState = get(stateMachine, 'methods.onEnterState');
