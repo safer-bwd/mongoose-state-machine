@@ -1,6 +1,6 @@
 {
   "name": "@safer-bwd/mongoose-state-machine",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A Mongoose plugin that implement a state machine into a schema",
   "main": "dist/index.js",
   "repository": {

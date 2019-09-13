@@ -22,8 +22,9 @@ const reservedPaths = new Set([
 export default (schema, options = {}) => {
   const { stateMachine, fieldName = 'status' } = options;
   const pathSchemaType = schema.path(fieldName);
-  if (!pathSchemaType) {
-    throw new PluginError(`Failed to find schema path '${fieldName}'`); // real
+  const pathType = schema.pathType(fieldName);
+  if (!pathSchemaType || pathType !== 'real') {
+    throw new PluginError(`Failed to find schema real path '${fieldName}'`);
   }
 
   let isTransition = false;

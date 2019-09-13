@@ -105,5 +105,5 @@ it('should throw error if invalid schema paths', async () => {
     fieldName: 'status',
     stateMachine
   });
-  expect(() => addPlugin2()).toThrow('Failed to find schema path \'status\'');
+  expect(() => addPlugin2()).toThrow('Failed to find schema real path \'status\'');
 });
