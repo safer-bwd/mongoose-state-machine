@@ -14,7 +14,7 @@ npm install @safer-bwd/mongoose-state-machine --save
 ## Options
 
 -   `stateMachine` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The state machine declaration object ([javascript-state-machine](https://github.com/jakesgordon/javascript-state-machine))
--   `fieldName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the schema field that stores the current state (optional, default `status`)
+-   `fieldName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the schema field that stores the current state (optional, default `status`)
 
 ## Usage
 
@@ -84,4 +84,6 @@ found.matterState;  // liquid;
 found.vaporize();   // I vaporized!
 found.matterState;  // gas
 found.melt();       // throw error
+
+matter.matterState = 'solid'; // gas (no effect!)
 ```

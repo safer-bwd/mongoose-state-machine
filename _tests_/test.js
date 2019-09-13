@@ -55,6 +55,9 @@ it('should work after instantiated', async () => {
   expect(matter.matterState).toBe('liquid');
   expect(matter.toObject()).toHaveProperty('matterState', 'liquid');
 
+  matter.matterState = 'gas'; // no effect
+  expect(matter.matterState).toBe('liquid');
+
   expect(() => matter.condense()).toThrow();
 });
 

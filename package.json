@@ -30,6 +30,12 @@
   "peerDependencies": {
     "mongoose": "^5.x"
   },
+  "dependencies": {
+    "javascript-state-machine": "^3.1.0",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "lodash.wrap": "^4.1.1"
+  },
   "devDependencies": {
     "@babel/cli": "^7.6.0",
     "@babel/core": "^7.6.0",
@@ -46,11 +52,5 @@
     "eslint-plugin-jest": "^22.17.0",
     "jest": "^24.9.0",
     "mongoose": "^5.6.13"
-  },
-  "dependencies": {
-    "javascript-state-machine": "^3.1.0",
-    "lodash.get": "^4.4.2",
-    "lodash.set": "^4.3.2",
-    "lodash.wrap": "^4.1.1"
   }
 }
