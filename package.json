@@ -1,6 +1,6 @@
 {
   "name": "@safer-bwd/mongoose-state-machine",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Mongoose plugin that implement a state machine into a schema",
   "main": "dist/index.js",
   "repository": {
@@ -37,10 +37,10 @@
     "lodash.wrap": "^4.1.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.0",
-    "@babel/core": "^7.6.0",
-    "@babel/node": "^7.6.1",
-    "@babel/preset-env": "^7.6.0",
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "babel-plugin-add-module-exports": "^1.0.2",
@@ -49,8 +49,8 @@
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^22.17.0",
+    "eslint-plugin-jest": "^22.21.0",
     "jest": "^24.9.0",
-    "mongoose": "^5.6.13"
+    "mongoose": "^5.7.13"
   }
 }
