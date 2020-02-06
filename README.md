@@ -21,8 +21,8 @@ npm install @safer-bwd/mongoose-state-machine --save
 First you need to declare a schema and extend it using the plugin.
 
 **Important:**
-The plugin restricts schema property names because they may conflict with [javascript-state-machine](https://github.com/jakesgordon/javascript-state-machine)
-The following names cannot be used: *state*, *is*, *can*, *cannot*, *transitions*, *allTransitions*, *allStates* and transitions names.
+The following schema paths cannot be used: *state*, *is*, *can*, *cannot*, *transitions*, *allTransitions*, *allStates* and transitions names.
+Because they conflict with [javascript-state-machine](https://github.com/jakesgordon/javascript-state-machine)
 
 ```javascript
 import mongoose from 'mongoose';
