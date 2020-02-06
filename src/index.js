@@ -82,7 +82,14 @@ export default (schema, options = {}) => {
 
   schema.post('init', function () {
     const doc = this;
-    const init = doc[fieldName] ? doc[fieldName] : undefined;
-    StateMachine.apply(doc, { ...stateMachine, init });
+    const state = get(doc, field.path);
+
+    StateMachine.apply(doc, {
+      ...stateMachine,
+      init: undefined
+    });
+
+    // eslint-disable-next-line no-underscore-dangle
+    doc._fsm.state = state;
   });
 };
