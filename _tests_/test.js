@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
 import stateMachinePlugin from '../src';
 
-let Matter;
-
-const noop = () => {};
-
+const onEnterState = jest.fn();
 const stateMachine = {
   init: 'solid',
   transitions: [
@@ -13,10 +10,10 @@ const stateMachine = {
     { name: 'vaporize', from: 'liquid', to: 'gas' },
     { name: 'condense', from: 'gas', to: 'liquid' }
   ],
-  methods: {
-    onEnterState: noop
-  }
+  methods: { onEnterState }
 };
+
+let Matter;
 
 beforeAll(async () => {
   await mongoose.connect(process.env.DB_MONGO_URI, {
@@ -26,25 +23,27 @@ beforeAll(async () => {
     } : null,
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useUnifiedTopology: true
   });
+
   const schema = new mongoose.Schema({ matterState: String });
   schema.plugin(stateMachinePlugin, { fieldName: 'matterState', stateMachine });
+  delete mongoose.models.Matter;
   Matter = mongoose.model('Matter', schema);
 });
 
 afterAll(async () => {
-  await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
 });
 
 afterEach(async () => {
-  await Matter.deleteMany();
+  onEnterState.mockReset();
+  await mongoose.connection.dropDatabase();
 });
 
-it('should work after instantiated', async () => {
+it('should apply after instantiated', async () => {
   const matter = new Matter();
-
   expect(matter.matterState).toBe('solid');
   expect(matter.toObject()).toHaveProperty('matterState', 'solid');
   expect(matter.is('solid')).toBeTruthy();
@@ -58,31 +57,66 @@ it('should work after instantiated', async () => {
   matter.matterState = 'gas'; // no effect
   expect(matter.matterState).toBe('liquid');
 
+  expect(onEnterState).toHaveBeenCalledTimes(2);
+  const { calls } = onEnterState.mock;
+  expect(calls.map(([{ transition }]) => transition)).toEqual(['init', 'melt']);
+  expect(calls.map(([{ to }]) => to)).toEqual(['solid', 'liquid']);
+
   expect(() => matter.condense()).toThrow();
 });
 
-it('should work after retrieving from a database', async () => {
+it('should apply after retrieved from DB #1(findOne)', async () => {
   const matter = new Matter();
-  await matter.save();
   matter.melt();
   await matter.save();
 
-  // findOne
-  const found1 = await Matter.findOne();
-  expect(found1.matterState).toBe('liquid');
-  expect(found1.toObject()).toHaveProperty('matterState', 'liquid');
-  found1.vaporize();
-  expect(found1.matterState).toBe('gas');
-  expect(found1.toObject()).toHaveProperty('matterState', 'gas');
+  onEnterState.mockClear();
 
-  // find
-  const coll = await Matter.find();
-  const found2 = coll[0];
-  expect(found2.matterState).toBe('liquid');
-  expect(found2.toObject()).toHaveProperty('matterState', 'liquid');
-  found2.vaporize();
-  expect(found2.matterState).toBe('gas');
-  expect(found2.toObject()).toHaveProperty('matterState', 'gas');
+  const found = await Matter.findOne();
+  expect(found.matterState).toBe('liquid');
+  expect(found.toObject()).toHaveProperty('matterState', 'liquid');
+
+  found.vaporize();
+  expect(found.matterState).toBe('gas');
+  expect(found.toObject()).toHaveProperty('matterState', 'gas');
+
+  found.matterState = 'liquid'; // no effect
+  expect(found.matterState).toBe('gas');
+
+  expect(onEnterState).toHaveBeenCalledTimes(1);
+  const { calls } = onEnterState.mock;
+  expect(calls.map(([{ transition }]) => transition)).toEqual(['vaporize']);
+  expect(calls.map(([{ to }]) => to)).toEqual(['gas']);
+
+  expect(() => found.vaporize()).toThrow();
+});
+
+it('should apply after retrieved from DB #2(find)', async () => {
+  const matter = new Matter();
+  matter.melt();
+  matter.vaporize();
+  await matter.save();
+
+  onEnterState.mockClear();
+
+  const foundColl = await Matter.find();
+  const found = foundColl[0];
+  expect(found.matterState).toBe('gas');
+  expect(found.toObject()).toHaveProperty('matterState', 'gas');
+
+  found.condense();
+  expect(found.matterState).toBe('liquid');
+  expect(found.toObject()).toHaveProperty('matterState', 'liquid');
+
+  found.matterState = 'solid'; // no effect
+  expect(found.matterState).toBe('liquid');
+
+  expect(onEnterState).toHaveBeenCalledTimes(1);
+  const { calls } = onEnterState.mock;
+  expect(calls.map(([{ transition }]) => transition)).toEqual(['condense']);
+  expect(calls.map(([{ to }]) => to)).toEqual(['liquid']);
+
+  expect(() => found.condense()).toThrow();
 });
 
 it('should throw error if invalid schema paths', async () => {
