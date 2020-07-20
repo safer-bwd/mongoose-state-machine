@@ -156,6 +156,7 @@ it('should work find and findOne by state field', async () => {
   const found = foundColl[0];
   expect(found.toObject()).toEqual(matter.toObject());
 
+
   const found1 = await Matter.findOne({ matterState: matter.matterState });
   expect(found1.toObject()).toEqual(matter.toObject());
 });
