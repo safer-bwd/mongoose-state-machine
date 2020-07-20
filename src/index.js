@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import StateMachine from 'javascript-state-machine';
 import get from 'lodash.get';
 import set from 'lodash.set';
@@ -46,11 +47,13 @@ export default (schema, options = {}) => {
     throw new MongooseStateMachineError(`Invalid schema path: '${transitionPath}' is a transition name`);
   }
 
-  field.frozen = false;
-  field.freeze = () => { field.frozen = true; };
-  field.unfreeze = () => { field.frozen = false; };
   field.set(function (val) {
-    return field.frozen ? get(this, field.path) : val;
+    if (!(this instanceof mongoose.Document)) {
+      return val;
+    }
+
+    const doc = this;
+    return doc._state_frozen ? get(doc, field.path) : val;
   });
 
   const onEnterState = get(stateMachine, 'methods.onEnterState');
@@ -59,9 +62,9 @@ export default (schema, options = {}) => {
 
     const from = get(doc, fieldName);
     if (from !== to) {
-      field.unfreeze();
+      doc._state_frozen = false;
       set(doc, field.path, to);
-      field.freeze();
+      doc._state_frozen = true;
     }
 
     return onEnterState
@@ -70,17 +73,26 @@ export default (schema, options = {}) => {
   });
 
   schema.method('$onInstantiated', function () {
+    if (!(this instanceof mongoose.Document)) {
+      return;
+    }
+
     const doc = this;
     if (!doc.isNew) {
       return;
     }
 
     StateMachine.apply(doc, stateMachine);
+    doc._state_frozen = true;
   });
 
   schema.queue('$onInstantiated', []);
 
   schema.post('init', function () {
+    if (!(this instanceof mongoose.Document)) {
+      return;
+    }
+
     const doc = this;
     const state = get(doc, field.path);
 
@@ -89,7 +101,7 @@ export default (schema, options = {}) => {
       init: undefined
     });
 
-    // eslint-disable-next-line no-underscore-dangle
     doc._fsm.state = state;
+    doc._state_frozen = true;
   });
 };
