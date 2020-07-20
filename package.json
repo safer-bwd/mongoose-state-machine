@@ -50,6 +50,6 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^22.21.0",
     "jest": "^26.0.1",
-    "mongoose": "^5.9.15"
+    "mongoose": "^5.9.25"
   }
 }
